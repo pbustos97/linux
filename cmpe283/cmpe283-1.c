@@ -18,7 +18,7 @@
 #define IA32_VMX_ENTRY_CTLS 0x484
 
 /*
- * struct caapability_info
+ * struct capability_info
  *
  * Represents a single capability (bit number and description).
  * Used by report_capability to output VMX capabilities.
@@ -106,9 +106,9 @@ struct capability_info procbased2[27] =
  };
 
 /*
- * VM Exit Controls
+ * VMX Exit Controls
  */
-struct capability_info vmexit[14] =
+struct capability_info vmxexit[14] =
 {
     { 2, "Save debug controls" },
     { 9, "Host address-space size" },
@@ -127,9 +127,9 @@ struct capability_info vmexit[14] =
 };
 
 /*
- * VM Entry Controls
+ * VMX Entry Controls
  */
-struct capability_info vmentry[12] =
+struct capability_info vmxentry[12] =
 {
     { 2, "Load debug controls" },
     { 9, "IA-32e mode guest" },
@@ -208,13 +208,13 @@ detect_vmx_features(void)
     rdmsr(IA32_VMX_EXIT_CTLS, lo, hi);
 	pr_info("Exit Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
-	report_capability(vmexit, 14, lo, hi);
+	report_capability(vmxexit, 14, lo, hi);
 
     /* Entry controls */
     rdmsr(IA32_VMX_ENTRY_CTLS, lo, hi);
 	pr_info("Entry Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
-	report_capability(vmentry, 12, lo, hi);
+	report_capability(vmxentry, 12, lo, hi);
 
 }
 
