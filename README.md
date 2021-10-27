@@ -21,6 +21,7 @@ I did the assignment myself
 10. Type `make -j CPUcount modules` which will build the Kernel modules
     - CPUcount should be replaced with the number of CPUs your machine can see ex. `make -j 12 modules`
 11. Type `make -j CPUcount` which will build the Linux Kernel
+    - You might have to edit .config by commeting out the line containing `CONFIG_SYSTEM_TRUSTED_KEYS="debian/certs/..."` if building on Debian
 12. Type `sudo make INSTALL_MOD_STRIP=1 modules_install` to package a the Kernel without debugging information
 13. Type `sudo make install` to install the Kernel
 14. Type `sudo reboot` in order to use the new Kernel
