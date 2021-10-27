@@ -28,7 +28,7 @@ I did the assignment myself
 15. Type `uname -a` to verify that the Machine is using the new Kernel that was built
     - The date listed should be whenever you built the kernel
     - The Kernel release version should be a higher number than from earlier
-16. Copy the files from Canvas into the directory containing the /linux directory
+16. Copy the Makefile and cmpe283-1.c files from Canvas into the directory containing the /linux directory
     - Files should be on the same level as the /linux directory when typing `ls`
 17. Inside of cmpe283-1.c do the following
     - At the end of the file, add a module license with the line
@@ -44,8 +44,9 @@ I did the assignment myself
     - Inside of the `detect_vmx_features` function, copy the lines from `/* Pinbased controls */`to the `report_capability` line and paste it below the original lines until there are 5 copies of that function
     - Replace the parameters of `rdmsr` with the definitions for the copies
     - Replace the parameters of `report_capability` with the structs and their size
-18. Type `make` inside of the directory holding the `cmpe281-1.c` file
+18. Type `make` inside of the directory holding the `cmpe281-1.c` and 'Makefile' file
     - If there are errors make sure to fix them
 19. Make sure a `cmpe283-1.ko` file is in the directory and type `sudo insmod cmpe283-1.ko`
 20. Check if it installed properly with `sudo lsmod | grep cmpe283`
 21. Check the output with the command `sudo dmesg`
+22. Uninstall the module with `sudo rmmod cmpe281-1`
