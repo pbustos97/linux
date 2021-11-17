@@ -1,7 +1,7 @@
 # CMPE 283 Assignments
- - [Assignment 1](#Assignment1)
- - [Assignment 2](#Assignment2)
- - [Assignment 3](#Assignment3)
+ - [Assignment 1](#assignment1)
+ - [Assignment 2](#assignment2)
+ - [Assignment 3](#assignment3)
 
 #Assignment1
 
