@@ -77,12 +77,21 @@ I did the assignment myself
     - The value is 1024 because AMD uses VM Exit numbers from 0 to 1024
 9. Assign eax the value of the u32 variable that was going through the for loop.
 10. Inside of the case `0x4ffffffe`, assign both of the u32 variables as 0 and create a for loop from 0 to 1024. On each iteration, add the value of one array into a variable that will represent the high bits and the value of the other array into the other variable which will represent the low bits.
-11. Assign the ebx value the high value and the ecx value the low value.
+11. Assign the ebx value the high bits and the ecx value the low bits.
 12. Inside of the default case, copy and pase the kvm_cpuid line.
 13. Inside of svm/svm.c and vmx/vmx.c, extern the exported variables and find the functions that will handle exits.
     - In svm.c it will be called `handle_exit`
     - In vmx.c it will be called `__vmx_handle_exit`
-14. In the functions that handle exits, figure out the exit code and create an if statement that will increment the array that represents the number of exits and use the exit_code as the array index. 
+14. In the functions that handles exits, figure out the exit code and create an if statement that will increment the array that represents the number of exits and use the exit_code as the array index.
+15. At the top of the function that handles exits, create two u32 arrays of size 2. These will be used to count how many CPU cycles it takes for an exit to be handled. One will be for the start time of an exit and the other will be for the ending time of an exit.
+    - One of the indices for both arrays will be representing the high bits and the other index will represent the low bits.
+16. Above the function that handles exits, create a void function that will modify the arrays created. 
+    - This function will use assembly to read the timestamp counter. And assign the high and low bits of the input array.
+    - This StackOverflow [link](https://stackoverflow.com/questions/17401914/why-should-i-use-rdtsc-differently-on-x86-and-x86-x64) will help with creating the function.
+17. Inside of the same if statement created earlier, call the newly created function and pass in the array that represents the start time.
+18. At the end of the function that handles exits, create the same if statement from earlier and call the new function but pass in the array that represents the end time instead.
+19. After calling the new function, with the corresponding externed array representing high and low bits of the cycle counter, add to the exit_code index the time it took to handle the exit.
+    - An example `total_exits_time_hi[exit_code] = total_exits_time_hi[exit_code] + (end_time[1] - start_time[1]);`
 
 ## Assignment 3
 
