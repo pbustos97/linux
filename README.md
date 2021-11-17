@@ -1,9 +1,9 @@
 # CMPE 283 Assignments
- * [Assignment1](#assignment1)
- * [Assignment2](#assignment2)
- * [Assignment3](#assignment3)
+ * [Assignment 1](#assignment-1)
+ * [Assignment 2](#assignment-2)
+ * [Assignment 3](#assignment-3)
 
-##Assignment1
+## Assignment 1
 
 ### Question 1
 I did the assignment myself
@@ -56,14 +56,14 @@ I did the assignment myself
 21. Check the output with the command `sudo dmesg`
 22. Uninstall the module with `sudo rmmod cmpe281-1`
 
-##Assignment2
+## Assignment 2
 
 ### Question 1
 I did the assignment myself
 
 ### Question 2 - Steps taken in order to complete assignment
 
-##Assignment3
+## Assignment 3
 
 ### Question 1
 I did the assignment myself
