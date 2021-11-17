@@ -25,6 +25,9 @@
 #include "trace.h"
 #include "pmu.h"
 
+extern u32 total_exits[100];
+extern u32 total_exits_time[100];
+
 /*
  * Unlike "struct cpuinfo_x86.x86_capability", kvm_cpu_caps doesn't need to be
  * aligned to sizeof(unsigned long) because it's not accessed via bitops.
@@ -1173,6 +1176,7 @@ get_out_of_range_cpuid_entry(struct kvm_vcpu *vcpu, u32 *fn_ptr, u32 index)
 	return kvm_find_cpuid_entry(vcpu, basic->eax, index);
 }
 
+
 bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 	       u32 *ecx, u32 *edx, bool exact_only)
 {
@@ -1222,8 +1226,6 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 }
 EXPORT_SYMBOL_GPL(kvm_cpuid);
 
-//extern u32 total_exits;
-//u32 total_exits = 0;
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
@@ -1234,22 +1236,25 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
 
-    //switch(eax)
-    //{
-    //    case 0x4fffffff:
-    //        //eax = total_exits;
-    //        break;
-    //    case 0x4ffffffe:
-    //        break;
-    //    case 0x4ffffffd:
-    //        break;
-    //    case 0x4ffffffc:
-    //        break;
-    //    default:
-    //        kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
-    //        break;
-    //}
-	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
+    printk(KERN_INFO "kvm_emulate_cpuid");
+
+    switch(eax)
+    {
+        case 0x4fffffff:
+            //eax = total_exits;
+            //printk(KERN_INFO "Leaf 0x4fffffff eax value %d", total_exits);
+            break;
+        case 0x4ffffffe:
+            break;
+        case 0x4ffffffd:
+            break;
+        case 0x4ffffffc:
+            break;
+        default:
+            kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
+            break;
+    }
+	//kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
 
 	kvm_rax_write(vcpu, eax);
 	kvm_rbx_write(vcpu, ebx);

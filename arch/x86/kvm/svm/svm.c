@@ -3293,6 +3293,9 @@ static void svm_get_exit_info(struct kvm_vcpu *vcpu, u64 *info1, u64 *info2,
 		*error_code = 0;
 }
 
+extern u32 total_exits[1024];
+extern u32 total_exits_time[1024];
+
 static int handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 {
 	struct vcpu_svm *svm = to_svm(vcpu);
@@ -3300,7 +3303,9 @@ static int handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	u32 exit_code = svm->vmcb->control.exit_code;
 
 	trace_kvm_exit(exit_code, vcpu, KVM_ISA_SVM);
+    printk(KERN_INFO "handle_exit exit_code %d", exit_code);
 
+    //total_exits++;
 	/* SEV-ES guests must use the CR write traps to track CR registers. */
 	if (!sev_es_guest(vcpu->kvm)) {
 		if (!svm_is_intercept(svm, INTERCEPT_CR0_WRITE))

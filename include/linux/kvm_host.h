@@ -43,6 +43,9 @@
 #define KVM_MAX_VCPU_ID KVM_MAX_VCPUS
 #endif
 
+//u32 total_exits;
+//EXPORT_SYMBOL(total_exits);
+
 /*
  * The bit 16 ~ bit 31 of kvm_memory_region::flags are internally used
  * in kvm, other bits are visible for userspace which are defined in

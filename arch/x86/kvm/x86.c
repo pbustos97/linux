@@ -80,6 +80,11 @@
 #include <asm/sgx.h>
 #include <clocksource/hyperv_timer.h>
 
+u32 total_exits[1024] = {0};
+u32 total_exits_time[1024] = {0};
+EXPORT_SYMBOL(total_exits);
+EXPORT_SYMBOL(total_exits_time);
+
 #define CREATE_TRACE_POINTS
 #include "trace.h"
 

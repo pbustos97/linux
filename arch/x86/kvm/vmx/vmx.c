@@ -5884,8 +5884,9 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
 		       vmcs_read16(VIRTUAL_PROCESSOR_ID));
 }
 
-//u32 total_exits = 0;
-//extern u32 total_exits;
+extern u32 total_exits[1024];
+extern u32 total_exits_time[1024];
+
 /*
  * The guest has exited.  See if we can fix it or if we need userspace
  * assistance.
@@ -5896,6 +5897,8 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	union vmx_exit_reason exit_reason = vmx->exit_reason;
 	u32 vectoring_info = vmx->idt_vectoring_info;
 	u16 exit_handler_index;
+
+    printk(KERN_INFO "__vmx_handle_exit exit_reason %d", exit_reason.full);
 
     //total_exits++;
 	/*
