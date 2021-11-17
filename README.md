@@ -3,12 +3,12 @@
  - [Assignment 2](#assignment2)
  - [Assignment 3](#assignment3)
 
-#Assignment1
+##Assignment1
 
-## Question 1
+### Question 1
 I did the assignment myself
 
-## Question 2 - Steps taken in order to complete assignment
+### Question 2 - Steps taken in order to complete assignment
 1. Fork the main linux repository on [Github](https://github.com/torvalds/linux)
 2. Clone the repository you forked into a Linux machine or VM that has an Intel CPU made from 2015 onwards
 3. Go into the cloned repository
@@ -56,17 +56,16 @@ I did the assignment myself
 21. Check the output with the command `sudo dmesg`
 22. Uninstall the module with `sudo rmmod cmpe281-1`
 
-#Assignment2
+##Assignment2
 
-## Question 1
+### Question 1
 I did the assignment myself
 
-## Question 2 - Steps taken in order to complete assignment
+### Question 2 - Steps taken in order to complete assignment
 
-#Assignment3
+##Assignment3
 
-## Question 1
+### Question 1
 I did the assignment myself
 
-## Question 2 - Steps taken in order to complete assignment
-
+### Question 2 - Steps taken in order to complete assignment
