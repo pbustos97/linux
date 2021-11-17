@@ -62,6 +62,27 @@ I did the assignment myself
 I did the assignment myself
 
 ### Question 2 - Steps taken in order to complete assignment
+1. Figure out what CPU architecture you are using.
+    - Use the command `cat /proc/cpuinfo` to find the vendorID
+2. Figure out where CPUID is defined in the Linux Kernel
+    - It is located in the `linux/arch/x86/kvm` directory for x86 systems.
+3. Open the x86.c file and modify it to have 3 arrays that have 1024 values, one array for number of exits, the other two are for cpu cycle counts.
+4. When the arrays are declared, make sure they are exported using `EXPORT_SYMBOL` because these need to be called in different modules.
+5. Open cpuid.c and import the exported symbols using the `extern` keyword.
+6. Inside of the `kvm_emulate_cpuid` function at the end of the file, declare two u32 variables and one int variable.
+    - The two u32 variables are for counting the number of clock cycles and the int variable is for the for loop.
+7. After the eax and ecx assignment lines, create a switch statement with the cases for `0x4fffffff`, `0x4ffffffe`, `0x4ffffffd`, `0x4ffffffc`
+    - These are for the custom CPUID leaf values that we will create.
+8. Inside of the case `0x4fffffff`, assign one of the u32 variables as 0 and create a for loop from 0 to 1024. On each iteration, add the value read to the u32 variable.
+    - The value is 1024 because AMD uses VM Exit numbers from 0 to 1024
+9. Assign eax the value of the u32 variable that was going through the for loop.
+10. Inside of the case `0x4ffffffe`, assign both of the u32 variables as 0 and create a for loop from 0 to 1024. On each iteration, add the value of one array into a variable that will represent the high bits and the value of the other array into the other variable which will represent the low bits.
+11. Assign the ebx value the high value and the ecx value the low value.
+12. Inside of the default case, copy and pase the kvm_cpuid line.
+13. Inside of svm/svm.c and vmx/vmx.c, extern the exported variables and find the functions that will handle exits.
+    - In svm.c it will be called `handle_exit`
+    - In vmx.c it will be called `__vmx_handle_exit`
+14. In the functions that handle exits, figure out the exit code and create an if statement that will increment the array that represents the number of exits and use the exit_code as the array index. 
 
 ## Assignment 3
 
