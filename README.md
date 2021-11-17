@@ -1,4 +1,9 @@
-# CMPE 283 Assignment 1
+# CMPE 283 Assignments
+ - [Assignment 1](#Assignment1)
+ - [Assignment 2](#Assignment2)
+ - [Assignment 3](#Assignment3)
+
+#Assignment1
 
 ## Question 1
 I did the assignment myself
@@ -50,3 +55,18 @@ I did the assignment myself
 20. Check if it installed properly with `sudo lsmod | grep cmpe283`
 21. Check the output with the command `sudo dmesg`
 22. Uninstall the module with `sudo rmmod cmpe281-1`
+
+#Assignment2
+
+## Question 1
+I did the assignment myself
+
+## Question 2 - Steps taken in order to complete assignment
+
+#Assignment3
+
+## Question 1
+I did the assignment myself
+
+## Question 2 - Steps taken in order to complete assignment
+

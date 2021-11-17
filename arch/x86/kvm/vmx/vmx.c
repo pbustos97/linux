@@ -5884,8 +5884,9 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
 		       vmcs_read16(VIRTUAL_PROCESSOR_ID));
 }
 
-extern u32 total_exits[1024];
-extern u32 total_exits_time[1024];
+extern u32 total_exits[1025];
+extern u32 total_exits_time_hi[1025];
+extern u32 total_exits_time_lo[1025];
 
 /*
  * The guest has exited.  See if we can fix it or if we need userspace

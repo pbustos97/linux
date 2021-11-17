@@ -25,8 +25,9 @@
 #include "trace.h"
 #include "pmu.h"
 
-extern u32 total_exits[100];
-extern u32 total_exits_time[100];
+extern u32 total_exits[1025];
+extern u32 total_exits_time_hi[1025];
+extern u32 total_exits_time_lo[1025];
 
 /*
  * Unlike "struct cpuinfo_x86.x86_capability", kvm_cpu_caps doesn't need to be
@@ -1229,6 +1230,8 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
+    u32 total_lo, total_hi;
+    int i;
 
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
@@ -1241,14 +1244,31 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
     switch(eax)
     {
         case 0x4fffffff:
-            //eax = total_exits;
-            //printk(KERN_INFO "Leaf 0x4fffffff eax value %d", total_exits);
+            total_hi = 0;
+            for (i = 0; i < 1024; i++) {
+                total_hi = total_hi + total_exits[i];
+            }
+            eax = total_hi;
+            printk(KERN_INFO "Leaf 0x4fffffff eax value %d", eax);
             break;
         case 0x4ffffffe:
+            total_hi = 0;
+            total_lo = 0;
+            for (i = 0; i < 1024; i++) {
+                total_lo = total_lo + total_exits_time_lo[i];
+                total_hi = total_hi + total_exits_time_hi[i];
+            }
+            ecx = total_lo;
+            ebx = total_hi;
+            printk(KERN_INFO "Leaf 0x4ffffffe ebx value %d", ebx);
+            printk(KERN_INFO "Leaf 0x4ffffffe ecx value %d", ecx);
             break;
         case 0x4ffffffd:
+            printk(KERN_INFO "Leaf 0x4fffffff eax value %d", eax);
             break;
         case 0x4ffffffc:
+            printk(KERN_INFO "Leaf 0x4ffffffc ebx value %d", ebx);
+            printk(KERN_INFO "Leaf 0x4ffffffc ecx value %d", ecx);
             break;
         default:
             kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);

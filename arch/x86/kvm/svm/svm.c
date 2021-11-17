@@ -3293,19 +3293,36 @@ static void svm_get_exit_info(struct kvm_vcpu *vcpu, u64 *info1, u64 *info2,
 		*error_code = 0;
 }
 
-extern u32 total_exits[1024];
-extern u32 total_exits_time[1024];
+extern u32 total_exits_time_hi[1025];
+extern u32 total_exits_time_lo[1025];
+extern u32 total_exits[1025];
+
+/*
+ * Helper function to get time from tsc
+ */
+void get_time(u32 *time) {
+    unsigned hi, lo;
+    __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
+    time[0] = lo;
+    time[1] = hi;
+}
 
 static int handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 {
+    u32 start_time[2];
+    u32 end_time[2];
 	struct vcpu_svm *svm = to_svm(vcpu);
 	struct kvm_run *kvm_run = vcpu->run;
 	u32 exit_code = svm->vmcb->control.exit_code;
 
 	trace_kvm_exit(exit_code, vcpu, KVM_ISA_SVM);
-    printk(KERN_INFO "handle_exit exit_code %d", exit_code);
+    //printk(KERN_INFO "handle_exit exit_code %d", exit_code);
 
-    //total_exits++;
+    if (exit_code >= 0 && exit_code <= 1024) {
+        total_exits[exit_code]++;
+        get_time(start_time);
+    }
+
 	/* SEV-ES guests must use the CR write traps to track CR registers. */
 	if (!sev_es_guest(vcpu->kvm)) {
 		if (!svm_is_intercept(svm, INTERCEPT_CR0_WRITE))
@@ -3348,6 +3365,12 @@ static int handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 
 	if (exit_fastpath != EXIT_FASTPATH_NONE)
 		return 1;
+
+    if (exit_code >= 0 && exit_code <= 1024) {
+        get_time(end_time);
+        total_exits_time_hi[exit_code] = total_exits_time_hi[exit_code] + (end_time[1] - start_time[1]);
+        total_exits_time_lo[exit_code] = total_exits_time_lo[exit_code] + (end_time[0] - start_time[0]);
+    }
 
 	return svm_invoke_exit_handler(vcpu, exit_code);
 }
