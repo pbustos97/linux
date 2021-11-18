@@ -5888,20 +5888,33 @@ extern u32 total_exits[1025];
 extern u32 total_exits_time_hi[1025];
 extern u32 total_exits_time_lo[1025];
 
+void get_time(u32 *time) {
+    unsigned hi, lo;
+    __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
+    time[0] = lo;
+    time[1] = hi;
+}
+
 /*
  * The guest has exited.  See if we can fix it or if we need userspace
  * assistance.
  */
 static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 {
+    u32 start_time[2];
+    u32 end_time[2];
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	union vmx_exit_reason exit_reason = vmx->exit_reason;
 	u32 vectoring_info = vmx->idt_vectoring_info;
 	u16 exit_handler_index;
 
-    printk(KERN_INFO "__vmx_handle_exit exit_reason %d", exit_reason.full);
+    //printk(KERN_INFO "__vmx_handle_exit exit_reason %d", exit_reason.full);
 
-    //total_exits++;
+    if (exit_reason.full >= 0 && exit_reason.full <= 69) {
+        total_exits[exit_reason.full]++;
+        get_time(start_time);
+    }
+
 	/*
 	 * Flush logged GPAs PML buffer, this will make dirty_bitmap more
 	 * updated. Another good is, in kvm_vm_ioctl_get_dirty_log, before
@@ -6036,13 +6049,19 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	else if (exit_reason.basic == EXIT_REASON_EPT_MISCONFIG)
 		return handle_ept_misconfig(vcpu);
 #endif
-
-	exit_handler_index = array_index_nospec((u16)exit_reason.basic,
+    
+    exit_handler_index = array_index_nospec((u16)exit_reason.basic,
 						kvm_vmx_max_exit_handlers);
 	if (!kvm_vmx_exit_handlers[exit_handler_index])
 		goto unexpected_vmexit;
 
-	return kvm_vmx_exit_handlers[exit_handler_index](vcpu);
+	if (exit_reason.full >= 0 && exit_reason.full <= 69) {
+        get_time(end_time);
+        total_exits_time_hi[exit_reason.full] = total_exits_time_hi[exit_reason.full] + (end_time[1] - start_time[1]);
+        total_exits_time_lo[exit_reason.full] = total_exits_time_lo[exit_reason.full] + (end_time[0] - start_time[0]);
+    }
+
+    return kvm_vmx_exit_handlers[exit_handler_index](vcpu);
 
 unexpected_vmexit:
 	vcpu_unimpl(vcpu, "vmx: unexpected exit reason 0x%x\n",

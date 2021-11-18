@@ -62,6 +62,8 @@ I did the assignment myself
 I did the assignment myself
 
 ### Question 2 - Steps taken in order to complete assignment
+0. Install another virtual machine that's using KVM and have CPUID installed on the VM.
+    - An easy way to install a VM via GUI is to install the `virt-manager` package since it uses KVM for the VMs it creates.
 1. Figure out what CPU architecture you are using.
     - Use the command `cat /proc/cpuinfo` to find the vendorID
 2. Figure out where CPUID is defined in the Linux Kernel
@@ -92,6 +94,11 @@ I did the assignment myself
 18. At the end of the function that handles exits, create the same if statement from earlier and call the new function but pass in the array that represents the end time instead.
 19. After calling the new function, with the corresponding externed array representing high and low bits of the cycle counter, add to the exit_code index the time it took to handle the exit.
     - An example `total_exits_time_hi[exit_code] = total_exits_time_hi[exit_code] + (end_time[1] - start_time[1]);`
+20. After finishing the code, in the Linux Kernel root directory, build and install the modules using `make -j CPUcount modules` and `make INSTALL_MOD_STRIP=1 modules_install`
+21. Remove the modules related to kvm using `rmmod`. You have to remove the architecture based module first, then do `rmmod kvm` to fully uninstall the kvm module.
+    - For AMD remove the module `kvm_amd`
+    - For Intel remove the module `kvm_intel`
+22. Reinstall the modules by reversing the removal process with the `modprobe` command
 
 ## Assignment 3
 
