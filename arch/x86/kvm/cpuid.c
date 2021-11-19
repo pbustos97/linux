@@ -1227,6 +1227,19 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 }
 EXPORT_SYMBOL_GPL(kvm_cpuid);
 
+// Helper function
+// Intel exits only :(
+bool checkEcx(u32 *eax, u32 *ebx, u32 *ecx, u32 *edx) {
+    if (ecx <= 69 && ecx >= 0) {
+        if (ecx == 35 || ecx == 38 || ecx == 42) {
+            eax = 0x00000000;
+            ebx = 0x00000000;
+            ecx = 0x00000000;
+            edx = 0xffffffff;
+        }
+    }
+}
+
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
@@ -1264,6 +1277,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
             printk(KERN_INFO "Leaf 0x4ffffffe ecx value %d", ecx);
             break;
         case 0x4ffffffd:
+            checkEcx(eax, ebx, ecx, edx);
             printk(KERN_INFO "Leaf 0x4fffffff eax value %d", eax);
             break;
         case 0x4ffffffc:
