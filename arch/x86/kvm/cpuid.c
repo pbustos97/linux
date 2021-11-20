@@ -1227,17 +1227,36 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 }
 EXPORT_SYMBOL_GPL(kvm_cpuid);
 
-// Helper function
-// Intel exits only :(
+// Helper functions
+// Intel only :(
+// return true if ecx is between 0 and 69 inclusive
 bool checkEcx(u32 *eax, u32 *ebx, u32 *ecx, u32 *edx) {
-    if (ecx <= 69 && ecx >= 0) {
-        if (ecx == 35 || ecx == 38 || ecx == 42) {
-            eax = 0x00000000;
-            ebx = 0x00000000;
-            ecx = 0x00000000;
-            edx = 0xffffffff;
-        }
+    if (ecx <= 69 || ecx >= 0) {
+        return true;
     }
+    changeGPRs(eax, ebx, ecx, edx);
+    return false;
+}
+// Change the value of the registers based on SDM and enabled KVM exits
+void changeGPRs(u32 *eax, u32 *ebx, u32 *ecx, u32 *edx) {
+    
+    // If ecx is not part of the SDM
+    if (ecx == 35 || ecx == 38 || ecx == 42) {
+        eax = 0x00000000;
+        ebx = 0x00000000;
+        ecx = 0x00000000;
+        edx = 0xffffffff;
+        return;
+    }
+    // IF ecx is part of the SDM but disabled in KVM
+    if (ecx == 1234) {
+        eax = 0x00000000;
+        ebx = 0x00000000;
+        ecx = 0x00000000;
+        edx = 0x00000000;
+        return;
+    }
+    return;
 }
 
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
@@ -1281,6 +1300,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
             printk(KERN_INFO "Leaf 0x4fffffff eax value %d", eax);
             break;
         case 0x4ffffffc:
+            checkEcx(eax, ebx, ecx, edx);
             printk(KERN_INFO "Leaf 0x4ffffffc ebx value %d", ebx);
             printk(KERN_INFO "Leaf 0x4ffffffc ecx value %d", ecx);
             break;
