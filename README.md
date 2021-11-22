@@ -68,19 +68,19 @@ I did the assignment myself
     - Use the command `cat /proc/cpuinfo` to find the vendorID
 2. Figure out where CPUID is defined in the Linux Kernel
     - It is located in the `linux/arch/x86/kvm` directory for x86 systems.
-3. Open the x86.c file and modify it to have 3 arrays that have 1024 values, one array for number of exits, the other two are for cpu cycle counts.
+3. Open the x86.c file and modify it to have 3 arrays that have 1025 values, one array for number of exits, the other two are for cpu cycle counts (one is for the high bits, the other for the low bits)
 4. When the arrays are declared, make sure they are exported using `EXPORT_SYMBOL` because these need to be called in different modules.
 5. Open cpuid.c and import the exported symbols using the `extern` keyword.
 6. Inside of the `kvm_emulate_cpuid` function at the end of the file, declare two u32 variables and one int variable.
     - The two u32 variables are for counting the number of clock cycles and the int variable is for the for loop.
 7. After the eax and ecx assignment lines, create a switch statement with the cases for `0x4fffffff`, `0x4ffffffe`, `0x4ffffffd`, `0x4ffffffc`
     - These are for the custom CPUID leaf values that we will create.
-8. Inside of the case `0x4fffffff`, assign one of the u32 variables as 0 and create a for loop from 0 to 1024. On each iteration, add the value read to the u32 variable.
+8. Inside of the case `0x4fffffff`, assign one of the u32 variables as 0 and create a for loop from 0 to 1024. On each iteration, add the value read from the array that is used for counting exits to the u32 variable.
     - The value is 1024 because AMD uses VM Exit numbers from 0 to 1024
 9. Assign eax the value of the u32 variable that was going through the for loop.
-10. Inside of the case `0x4ffffffe`, assign both of the u32 variables as 0 and create a for loop from 0 to 1024. On each iteration, add the value of one array into a variable that will represent the high bits and the value of the other array into the other variable which will represent the low bits.
+10. Inside of the case `0x4ffffffe`, assign both of the u32 variables as 0 and create a for loop from 0 to 1024. On each iteration, add the value of the array that represents high bits into a variable that will represent the high bits and the value of the other array into the other variable which will represent the low bits.
 11. Assign the ebx value the high bits and the ecx value the low bits.
-12. Inside of the default case, copy and pase the kvm_cpuid line.
+12. Inside of the default case, copy and paste the kvm_cpuid line.
 13. Inside of svm/svm.c and vmx/vmx.c, extern the exported variables and find the functions that will handle exits.
     - In svm.c it will be called `handle_exit`
     - In vmx.c it will be called `__vmx_handle_exit`
@@ -99,6 +99,9 @@ I did the assignment myself
     - For AMD remove the module `kvm_amd`
     - For Intel remove the module `kvm_intel`
 22. Reinstall the modules by reversing the removal process with the `modprobe` command
+23. Run the newly installed VM, install CPUID if the OS uses the apt package manager, and run `cpuid -l 0x4fffffff` and `cpuid -l 0x4ffffffe`.
+    - The results should be increasing each time you run the commands.
+    - For the 0x4ffffffe leaf, ebx will stay 0 for a long time until the VM reaches the number of clock cycles required to max out the lower 32 bits of the timestamp counter
 
 ## Assignment 3
 
@@ -106,3 +109,13 @@ I did the assignment myself
 I did the assignment myself
 
 ### Question 2 - Steps taken in order to complete assignment
+0. Make sure [Assignment 2](#assignment-2) is working.
+1. Above the `kvm_emulate_cpuid` function, create a helper function that will check if an input ecx value is valid with the arguments of eax, ebx, ecx, edx. All passed as reference.
+    - I made this function a boolean function.
+2. For Intel machines, look at Intel SDM Volume 3 Appendix C, this will have all the valid VM exits that Intel allows on their CPUs.
+3. Create an if statement that does not include the range of the min and max values presented in the SDM. On November 2021, the min and max values are 0 and 69.
+4. Inside of that if statement, assign eax, ebx, and ecx the values of `0x00000000` and edx the value of `0xffffffff` and return false. Because these values will not be in the SDM
+5. If the value is inside of the SDM range, create an if statement for the missing values and return the same as step 4.
+    - Check the SDM for values that aren't defined.
+6. Create an if statement for values that are disabled by KVM. These values are `1234567890` and assign the value `0x0000000` on all four registers and return false.
+7. At the end of the function, return true because ecx is a valid value for both the SDM and KVM.
