@@ -1233,34 +1233,34 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 bool checkEcx(u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
 {
     // Invalid exits
-    if (ecx > 69 || ecx < 0)
+    if (*ecx > 69 || *ecx < 0)
     {
-        eax = 0x00000000;
-        ebx = 0x00000000;
-        ecx = 0x00000000;
-        edx = 0xffffffff;
+        *eax = 0x00000000;
+        *ebx = 0x00000000;
+        *ecx = 0x00000000;
+        *edx = 0xffffffff;
         return false;
     }
     else 
     {
         // Exits not in KVM
-        if (ecx == 35 || ecx == 38 || ecx == 42)
+        if (*ecx == 35 || *ecx == 38 || *ecx == 42)
         {
-            eax = 0x00000000;
-            ebx = 0x00000000;
-            ecx = 0x00000000;
-            edx = 0xffffffff;
+            *eax = 0x00000000;
+            *ebx = 0x00000000;
+            *ecx = 0x00000000;
+            *edx = 0xffffffff;
             return false;
         }
-        // KVM disabled exits
-        else if (ecx == 1245)
-        {
-            eax = 0x00000000;
-            ebx = 0x00000000;
-            ecx = 0x00000000;
-            edx = 0x00000000;
-            return false;
-        }
+        // KVM disabled exits (values inside of the arrays should not change because the exits are disabled)
+        //else if (ecx == 1245)
+        //{
+        //    eax = 0x00000000;
+        //    ebx = 0x00000000;
+        //    ecx = 0x00000000;
+        //    edx = 0x00000000;
+        //    return false;
+        //}
     }
     return true;
 }
@@ -1276,8 +1276,6 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
-
-    printk(KERN_INFO "kvm_emulate_cpuid");
 
     switch(eax)
     {
@@ -1302,24 +1300,37 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
             printk(KERN_INFO "Leaf 0x4ffffffe ecx value %d", ecx);
             break;
         case 0x4ffffffd:
-            if (checkEcx(eax, ebx, ecx, edx))
+            eax = 0x0;
+            ebx = 0x0;
+            ecx = 0x0;
+            edx = 0x0;
+            if (checkEcx(&eax, &ebx, &ecx, &edx))
             {
                 eax = total_exits[ecx];
-                printk(KERN_INFO "Leaf 0x4ffffffd eax value %d", eax);
-                break;
             }
-            printk(KERN_INFO "Leaf 0x4ffffffd invalid ecx value");
+            printk(KERN_INFO "Leaf 0x4ffffffd eax value %d", eax);
+            printk(KERN_INFO "Leaf 0x4ffffffd ebx value %d", ebx);
+            printk(KERN_INFO "Leaf 0x4ffffffd ecx value %d", ecx);
+            printk(KERN_INFO "Leaf 0x4ffffffd edx value %d", edx);
+
             break;
         case 0x4ffffffc:
-            if (checkEcx(eax, ebx, ecx, edx))
+            eax = 0x0;
+            ebx = 0x0;
+            ecx = 0x0;
+            edx = 0x0;
+            if (checkEcx(&eax, &ebx, &ecx, &edx))
             {
                 ebx = total_exits_time_hi[ecx];
                 ecx = total_exits_time_lo[ecx];
                 printk(KERN_INFO "Leaf 0x4ffffffc ebx value %d", ebx);
                 printk(KERN_INFO "Leaf 0x4ffffffc ecx value %d", ecx);
-                break;
             }
-            printk(KERN_INFO "Leaf 0x4ffffffc invalid ecx value");
+            printk(KERN_INFO "Leaf 0x4ffffffc eax value %d", eax);
+            printk(KERN_INFO "Leaf 0x4ffffffc ebx value %d", ebx);
+            printk(KERN_INFO "Leaf 0x4ffffffc ecx value %d", ecx);
+            printk(KERN_INFO "Leaf 0x4ffffffc edx value %d", edx);
+
             break;
         default:
             kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
