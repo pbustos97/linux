@@ -1233,6 +1233,7 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 bool checkEcx(u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
 {
     printk(KERN_INFO "ecx pointer value: %d", *ecx);
+
     // Invalid exits
     if (*ecx > 69 || *ecx < 0)
     {
@@ -1245,7 +1246,7 @@ bool checkEcx(u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
     }
     else 
     {
-        // Exits not in KVM
+        // Exits not in SDM
         if (*ecx == 35 || *ecx == 38 || *ecx == 42)
         {
             printk(KERN_INFO "ecx invalid SDM exit");
@@ -1256,14 +1257,15 @@ bool checkEcx(u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
             return false;
         }
         // KVM disabled exits (values inside of the arrays should not change because the exits are disabled)
-        //else if (ecx == 1245)
-        //{
-        //    eax = 0x00000000;
-        //    ebx = 0x00000000;
-        //    ecx = 0x00000000;
-        //    edx = 0x00000000;
-        //    return false;
-        //}
+        else if (*ecx == 5 || *ecx == 6 || *ecx == 11 || *ecx == 17 || *ecx == 66 || *ecx == 69)
+        {
+            printk(KERN_INFO "ecx disabled KVM exit");
+            eax = 0x00000000;
+            ebx = 0x00000000;
+            ecx = 0x00000000;
+            edx = 0x00000000;
+            return false;
+        }
     }
     return true;
 }
