@@ -1232,9 +1232,11 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 // Return true if Ecx is valid, else change register values and return false
 bool checkEcx(u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
 {
+    printk(KERN_INFO "ecx pointer value: %d", *ecx);
     // Invalid exits
     if (*ecx > 69 || *ecx < 0)
     {
+        printk(KERN_INFO "ecx invalid exit");
         *eax = 0x00000000;
         *ebx = 0x00000000;
         *ecx = 0x00000000;
@@ -1246,6 +1248,7 @@ bool checkEcx(u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
         // Exits not in KVM
         if (*ecx == 35 || *ecx == 38 || *ecx == 42)
         {
+            printk(KERN_INFO "ecx invalid SDM exit");
             *eax = 0x00000000;
             *ebx = 0x00000000;
             *ecx = 0x00000000;
@@ -1277,6 +1280,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
 
+    printk(KERN_INFO "ecx value: %d", ecx);
     switch(eax)
     {
         case 0x4fffffff:
@@ -1302,22 +1306,21 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
         case 0x4ffffffd:
             eax = 0x0;
             ebx = 0x0;
-            ecx = 0x0;
             edx = 0x0;
             if (checkEcx(&eax, &ebx, &ecx, &edx))
             {
                 eax = total_exits[ecx];
+                break;
             }
+            ecx = 0x0;
             printk(KERN_INFO "Leaf 0x4ffffffd eax value %d", eax);
             printk(KERN_INFO "Leaf 0x4ffffffd ebx value %d", ebx);
             printk(KERN_INFO "Leaf 0x4ffffffd ecx value %d", ecx);
             printk(KERN_INFO "Leaf 0x4ffffffd edx value %d", edx);
-
             break;
         case 0x4ffffffc:
             eax = 0x0;
             ebx = 0x0;
-            ecx = 0x0;
             edx = 0x0;
             if (checkEcx(&eax, &ebx, &ecx, &edx))
             {
@@ -1325,7 +1328,9 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
                 ecx = total_exits_time_lo[ecx];
                 printk(KERN_INFO "Leaf 0x4ffffffc ebx value %d", ebx);
                 printk(KERN_INFO "Leaf 0x4ffffffc ecx value %d", ecx);
+                break;
             }
+            ecx = 0x0;
             printk(KERN_INFO "Leaf 0x4ffffffc eax value %d", eax);
             printk(KERN_INFO "Leaf 0x4ffffffc ebx value %d", ebx);
             printk(KERN_INFO "Leaf 0x4ffffffc ecx value %d", ecx);
