@@ -113,20 +113,26 @@ I did the assignment myself
 1. Above the `kvm_emulate_cpuid` function, create a helper function that will check if an input ecx value is valid with the arguments of eax, ebx, ecx, edx. All passed as reference.
     - I made this function a boolean function.
 2. For Intel machines, look at Intel SDM Volume 3 Appendix C, this will have all the valid VM exits that Intel allows on their CPUs.
-3. Create an if statement that does not include the range between the min and max values presented in the SDM. On November 2021, the min and max values are 0 and 69.
-4. Inside of that if statement, assign eax, ebx, and ecx the values of `0x00000000` and edx the value of `0xffffffff` and return false. Because these values will not be in the SDM
-5. If the value is inside of the SDM range, create an if statement for the missing values and return the same as step 4.
+3. Create an if statement that does not include the range between the min and max values presented in the SDM. As of November 2021, the min and max values are 0 and 69.
+4. Inside of that if statement, assign eax, ebx, and ecx the values of `0x00000000` and edx the value of `0xffffffff` and return false. These are set as because these values will not be in the SDM
+5. If the value is inside of the SDM range, create an if statement for the missing values from the SDM and return the same as step 4.
     - Check the SDM for values that aren't defined.
 6. Create an if statement for values that are disabled by KVM. These values are `5, 6, 11, 17, 66, 69` and assign the value `0x00000000` on all four registers and return false.
     - The values are found in the vmx.h file inside of `arch/x86/include/uapi/asm/vmx.h`
 7. At the end of the function, return true because ecx would be a valid value for both the SDM and KVM.
 8. Inside of the case `0x4ffffffd` and `0x4ffffffc`, assign eax, ebx, and edx the value of `0x00000000` and create an if statement that calls the function created earlier in step 1.
-9. Depending on where the if statement is, if the statement passes, it should assign the appropriate values and break.
+9. Depending on where the if statement is, if the statement passes, it should assign the appropriate values and break from the switch statement.
     - The if statement for `0x4ffffffd` should assign eax the current value of the exits for the requested exit type when the user types in `cpuid -l 0x4ffffffd -s exit_number`
     - The if statement for `0x4ffffffc` should assign ebx the current value of the high bits for the CPU cycles of the requested exit number and assign ecx the current value of the low bits for the CPU cycles of the requested exit number
 10. Run the same build commands from assignment 2 starting at step 20.
 11. Test using `cpuid -l 0x4ffffffd -s exit_number` and `cpuid -l 0x4ffffffc -s exit_number` 
 
 ### Question 3 - Frequency of exits and how many exits for a full VM boot
+There are more exits performed during certain VM operations, for example, if I go to the root directory and do a ls -R, starting from 0x00154b6f exits, it turns into 0x001631b5 which is around 59,000 additional exits compared to something like exit 67 which is at 0 exits before and after doing the ls command from the root directory.
+The number of exits for a full VM boot after the VMX module is reloaded is between 0x000f06aa and 0x000f06b2 (which is around 980,000+ exits) including login with a 7 character username, 12 character password, and typing in the cpuid command for 0x4fffffff.
 
 ### Question 4 - Which are the most frequent and least frequent exits
+Leaving an Ubuntu server 18.04 VM open overnight for at least 8 hours
+    -The most frequent exit is exit 30 which is the I/O instruction exit.
+    - There were multiple least frequent exits, exits 2, 3, 4, 8, 9, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 33, 34, 36, 37, 38, 39, 41, 42, 43, 44, 45, 46, 48, 48, 50, 51, 53, 56, 57, 58, 59, 60, 61, 63, 64, 65, 67, and 68. All of these had 0 exits.
+    - The least frequent exit with a value greater than 0 is exit 62 which is the page-modification log full exit with 1 exit. Another one with a small amount of exits is exit 55 with 3 exits which is the XSETBV exit. The next one had 9 exits which was the WBINVD or WBNOINVD exit.

@@ -1314,7 +1314,6 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
                 eax = total_exits[ecx];
                 break;
             }
-            ecx = 0x0;
             printk(KERN_INFO "Leaf 0x4ffffffd eax value %d", eax);
             printk(KERN_INFO "Leaf 0x4ffffffd ebx value %d", ebx);
             printk(KERN_INFO "Leaf 0x4ffffffd ecx value %d", ecx);
@@ -1332,7 +1331,6 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
                 printk(KERN_INFO "Leaf 0x4ffffffc ecx value %d", ecx);
                 break;
             }
-            ecx = 0x0;
             printk(KERN_INFO "Leaf 0x4ffffffc eax value %d", eax);
             printk(KERN_INFO "Leaf 0x4ffffffc ebx value %d", ebx);
             printk(KERN_INFO "Leaf 0x4ffffffc ecx value %d", ecx);
