@@ -4,7 +4,6 @@
 I did this assignment myself
 
 ## Question 2
-Sample of print of exit count output from dmesg with ept without ept
 With EPT
 ![EPT](https://imgur.com/jSkRL3S.png)
 
