@@ -2,6 +2,7 @@
  * [Assignment 1](#assignment-1)
  * [Assignment 2](#assignment-2)
  * [Assignment 3](#assignment-3)
+ * [Assignment 4](https://github.com/pbustos97/linux/blob/master/README-Assignment4.md)
 
 ## Assignment 1
 

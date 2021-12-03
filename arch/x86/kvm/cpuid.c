@@ -1232,8 +1232,6 @@ EXPORT_SYMBOL_GPL(kvm_cpuid);
 // Return true if Ecx is valid, else change register values and return false
 bool checkEcx(u32 *eax, u32 *ebx, u32 *ecx, u32 *edx)
 {
-    printk(KERN_INFO "ecx pointer value: %d", *ecx);
-
     // Invalid exits
     if (*ecx > 69 || *ecx < 0)
     {
@@ -1282,7 +1280,6 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
 
-    printk(KERN_INFO "ecx value: %d", ecx);
     switch(eax)
     {
         case 0x4fffffff:
@@ -1312,12 +1309,9 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
             if (checkEcx(&eax, &ebx, &ecx, &edx))
             {
                 eax = total_exits[ecx];
+                printk(KERN_INFO "Exit %d exited VM %d times", ecx, eax);
                 break;
             }
-            printk(KERN_INFO "Leaf 0x4ffffffd eax value %d", eax);
-            printk(KERN_INFO "Leaf 0x4ffffffd ebx value %d", ebx);
-            printk(KERN_INFO "Leaf 0x4ffffffd ecx value %d", ecx);
-            printk(KERN_INFO "Leaf 0x4ffffffd edx value %d", edx);
             break;
         case 0x4ffffffc:
             eax = 0x0;
